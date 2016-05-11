@@ -1,0 +1,34 @@
+#singleton execution lock
+LOCK_FILENAME="$STATIC_TEMP_DIR/lockfile.$PLUGIN_NAME"
+
+if [ ! -e "$LOG_DATA_OUTPUT_DIR" ]; then
+    mkdir -p $LOG_DATA_OUTPUT_DIR
+    echo "Created $LOG_DATA_OUTPUT_DIR"
+fi
+
+#check for lock
+if [ ! -e "$LOCK_FILENAME" ]; then
+	#create lockfile fith pid inside
+	echo $$ > $LOCK_FILENAME
+	#proceed with normal execution
+	echo "Starting $PLUGIN_NAME" 
+	source "$MY_DIR/do_work.script" 
+	#erase lockfile, we are done
+	/bin/rm $LOCK_FILENAME -f
+else
+	#lockfile exists. Determine if there is a collision, or orphan
+	LOCK_PID=$(<$LOCK_FILENAME)
+	echo "Conflicting PID: $LOCK_PID" 
+	PID_ACTIVE=`ps | grep "$LOCK_PID" | grep -v "grep"`
+	if [ -z "$PID_ACTIVE" ]; then
+		#this case means the file is just orphan. Erase it, and restart this script recursively
+		echo "Orphan lock file found. Removing lockfile" 
+		/bin/rm "$LOCK_FILENAME" -f
+		./`basename $0`
+	else
+		#process is still active, and this is a collision
+		echo "Found collision process. Exiting." 
+	fi
+fi
+
+echo "Closing $PLUGIN_NAME" 

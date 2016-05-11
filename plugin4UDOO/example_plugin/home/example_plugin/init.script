@@ -1,0 +1,7 @@
+#!/bin/sh
+MY_DIR=`dirname $0`
+source $MY_DIR/settings.conf
+
+/bin/echo "Initializing $PLUGIN_NAME"
+#Here, we do everything that needs to be done while the OS is staring up, like configuring drivers, loading daemons and so on.
+#

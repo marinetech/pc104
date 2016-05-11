@@ -1,0 +1,217 @@
+#!/bin/sh
+MY_DIR=`dirname $0`
+source $MY_DIR/settings.conf
+
+#first part of the page
+/bin/cat << END
+<html>
+	<head>
+		<script>
+
+			function selectAllOptions(selStr)
+			{
+				var selObj = document.getElementById(selStr);
+				for (var i=0; i<selObj.options.length; i++) 
+				{
+					selObj.options[i].selected = true;
+				}
+			}
+	
+			function remove_cron_time_from_executeion_times()
+			{
+				execution_times.remove(execution_times.selectedIndex);
+			}
+
+			function calculate_cron_string() 
+			{
+
+				var jobs = "";
+
+				var mins = SettingsForm.minutes.value ;
+				var hors = SettingsForm.hours.value ;
+				var daas = SettingsForm.days.value ;
+				var mons = SettingsForm.months.value ;
+				var wdas = SettingsForm.weekdays.value ;
+
+				jobs = mins + " " + hors + " " + daas + " " + mons + " " + wdas;
+
+				return jobs;
+			}
+
+			function add_cron_time()
+			{
+				var job = calculate_cron_string();
+				execution_times.appendChild(new Option(job,job));
+			}
+			
+			function populateListBox(Listbox,begin,count)
+			{
+				Listbox.appendChild(new Option("* Any","*"));
+				
+				for(i=begin;i<=count;i++)
+				{
+					Listbox.appendChild(new Option(i,i));					
+		      		}
+		       		Listbox.options[0].selected = true;
+
+			}
+			
+			function populate()
+			{
+				populateListBox(minutes,0,59);
+				populateListBox(hours,0,23);
+				populateListBox(days,1,31);
+
+				months.appendChild(new Option("* Any","*"));
+				months.options[0].selected = true;
+				months.appendChild(new Option("1 January","1"));
+				months.appendChild(new Option("2 February","2"));
+				months.appendChild(new Option("3 March","3"));
+				months.appendChild(new Option("4 April","4"));
+				months.appendChild(new Option("5 May","5"));
+				months.appendChild(new Option("6 June","6"));
+				months.appendChild(new Option("7 July","7"));
+				months.appendChild(new Option("8 August","8"));
+				months.appendChild(new Option("9 September","9"));
+				months.appendChild(new Option("10 October","10"));
+				months.appendChild(new Option("11 November","11"));
+				months.appendChild(new Option("12 December","12"));
+
+				weekdays.appendChild(new Option("* Any","*"));
+				weekdays.options[0].selected = true;
+				weekdays.appendChild(new Option("0 Sunday","0"));
+				weekdays.appendChild(new Option("1 Monday","1"));
+				weekdays.appendChild(new Option("2 Tuesday","2"));
+				weekdays.appendChild(new Option("3 Wednesday","3"));
+				weekdays.appendChild(new Option("4 Thursday","4"));
+				weekdays.appendChild(new Option("5 Friday","5"));
+				weekdays.appendChild(new Option("6 Saturday","6"));
+END
+
+
+#now update execution times from cron
+
+N=0
+/usr/bin/crontab -l -u $PLUGIN_NAME | /usr/bin/perl -i -pe '$_=""if 1..3'| /bin/sed 's/\(.*\*\).*/\1/g' | while read LINE ; do
+        N=$((N+1))
+	/bin/echo "execution_times.appendChild(new Option(\"$LINE\"","\"$LINE\"));"
+done
+
+/bin/cat << END
+
+			}
+		</script>
+	</head>
+	<body onload="populate();">
+		<h1> $FRIENDLY_NAME </h1>
+		<form action="/cgi-bin/generate_settings.cgi" method="get" name="SettingsForm" onsubmit="selectAllOptions('execution_times');">
+			<fieldset>
+				<legend>Sensor Settings</legend>
+				<input type=HIDDEN name="PLUGIN_NAME" value="$PLUGIN_NAME"/>
+				<input type=HIDDEN name="FRIENDLY_NAME" value="$FRIENDLY_NAME"/>
+				<input type=HIDDEN name="VERSION" value="$VERSION"/>
+				<div>
+					<label for="AVERAGE_TIME">Averaging time (sec):</label><br>
+					<input type="text" name="AVERAGE_TIME" value=$AVERAGE_TIME maxlength="100" /><br>
+				</div>
+				<div>
+					<label for="WARMUP_TIME_SEC">Warmup time (sec):</label><br>
+					<input type="text" name="WARMUP_TIME_SEC" value=$WARMUP_TIME_SEC maxlength="100" /><br>
+				</div>
+				<div>
+					<select name="BAUD_RATE">
+END
+
+BAUD_RATES_ARRAY=(1200 2400 4800 9600 14400 19200 28800 38400 56000 57600 115200)
+
+for iBaud_rate in ${BAUD_RATES_ARRAY[@]}; 
+do
+	if [[ "$iBaud_rate" == "$BAUD_RATE" ]]
+	then
+		/bin/echo "<option value =\""$iBaud_rate"\" selected>$iBaud_rate</option>"
+	else
+		/bin/echo "<option value =\""$iBaud_rate"\">$iBaud_rate</option>"
+	fi
+done
+
+/bin/cat << END					
+					</select>
+				</div>
+				<div>
+					<label for="COM_PORT">COM Port:</label><br>
+					<select name="COM_PORT">
+END
+
+#show all available ttyS* and ttyUSB*
+
+N=0
+/bin/ls -1 /dev/ttyS* /dev/ttyUSB* | while read LINE ; do
+        N=$((N+1))
+	if [[ "$LINE" == "$COM_PORT" ]]
+	then
+		/bin/echo "<option value =$LINE selected>$LINE</option>"
+	else
+		/bin/echo "<option value =$LINE>$LINE</option>"
+	fi
+done
+
+/bin/cat << END
+					</select>
+				</div>
+				<div>
+					<label for="POWER_PORT">Power Port:</label><br>
+					<select name="POWER_PORT">
+END
+
+for (( N=1; N<=16; N++ ))
+do
+	if [[ "$POWER_PORT" == *"$N"* ]]
+	then
+		/bin/echo "<option value ="P$N" selected>"P$N"</option>"
+	else
+		/bin/echo "<option value ="P$N">"P$N"</option>"
+	fi
+done
+
+/bin/cat << END
+					</select>
+				<table border="1" cellpadding="5">
+					<td>Execute On The Minute</td>
+					<td><select size="3" name="minutes" id="minutes"></select></td>
+					<tr>
+					<td>Execute On The Hour</td>
+					<td><select size="3" name="hours" id="hours"></select></td>
+					</tr>
+					<tr>
+					<td>Execute On The Day Of The Month</td>
+					<td><select size="3" name="days" id="days"></select></td>
+					</tr>
+					<tr>
+					<td>Execute On The Month</td>
+					<td><select size="3" name="months" id="months"></select></td>
+					</tr>
+					<tr>
+					<td>Execute On The Weekday</td>
+					<td><select size="3" name="weekdays" id="weekdays"></select></td>
+					</tr>
+					<tr>
+					<td>Execute times</td>
+					<td>
+						<select id="execution_times" name="EXECUTION_TIMES" size="5" multiple></select>
+						<br>
+						<input type="button" value="Add" onclick="add_cron_time();">
+						<input type="button" value="Remove" onclick="remove_cron_time_from_executeion_times();">
+					</td>		
+					</tr>									
+				</table>
+				<div>
+					<br>
+					<input type="submit" value="Submit" />
+				</div>
+			</fieldset>
+		</form>
+	<p>Version: $VERSION<p>
+	</body>
+</html>
+
+END

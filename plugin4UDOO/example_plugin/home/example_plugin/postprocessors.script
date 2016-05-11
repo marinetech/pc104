@@ -1,0 +1,9 @@
+#!/bin/sh
+#THIS SCRIPT HAS TO BE "SOURCED" FROM THE do_work SCRIPT
+
+if [ $SEND_ALL2SHORE -ne 0 ];
+then
+	echo "Signal UDOO to send all the processed data to shore"
+	echo upload_flag | nc $UDOO_IP $UDOO_PORT
+	sleep $UPLOAD_TIME_SEC
+fi

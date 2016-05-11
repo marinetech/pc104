@@ -1,0 +1,104 @@
+<html>
+	<head>
+		<script>
+
+			function selectAllOptions(selStr)
+			{
+				var selObj = document.getElementById(selStr);
+				for (var i=0; i<selObj.options.length; i++) 
+				{
+					selObj.options[i].selected = true;
+				}
+			}
+	
+			function remove_cron_time_from_executeion_times()
+			{
+				execution_times.remove(execution_times.selectedIndex);
+			}
+
+			function calculate_cron_string() 
+			{
+
+				var jobs = "";
+
+				var mins = SettingsForm.minutes.value ;
+				var hors = SettingsForm.hours.value ;
+				var daas = SettingsForm.days.value ;
+				var mons = SettingsForm.months.value ;
+				var wdas = SettingsForm.weekdays.value ;
+
+				jobs = mins + " " + hors + " " + daas + " " + mons + " " + wdas;
+
+				return jobs;
+			}
+
+			function add_cron_time()
+			{
+				var job = calculate_cron_string();
+				execution_times.appendChild(new Option(job,job));
+			}
+			
+			function populateListBox(Listbox,begin,count)
+			{
+				Listbox.appendChild(new Option("* Any","*"));
+				
+				for(i=begin;i<=count;i++)
+				{
+					Listbox.appendChild(new Option(i,i));					
+		      		}
+		       		Listbox.options[0].selected = true;
+
+			}
+			
+			function populate()
+			{
+				populateListBox(minutes,0,59);
+				populateListBox(hours,0,23);
+				populateListBox(days,1,31);
+
+				months.appendChild(new Option("* Any","*"));
+				months.options[0].selected = true;
+				months.appendChild(new Option("1 January","1"));
+				months.appendChild(new Option("2 February","2"));
+				months.appendChild(new Option("3 March","3"));
+				months.appendChild(new Option("4 April","4"));
+				months.appendChild(new Option("5 May","5"));
+				months.appendChild(new Option("6 June","6"));
+				months.appendChild(new Option("7 July","7"));
+				months.appendChild(new Option("8 August","8"));
+				months.appendChild(new Option("9 September","9"));
+				months.appendChild(new Option("10 October","10"));
+				months.appendChild(new Option("11 November","11"));
+				months.appendChild(new Option("12 December","12"));
+
+				weekdays.appendChild(new Option("* Any","*"));
+				weekdays.options[0].selected = true;
+				weekdays.appendChild(new Option("0 Sunday","0"));
+				weekdays.appendChild(new Option("1 Monday","1"));
+				weekdays.appendChild(new Option("2 Tuesday","2"));
+				weekdays.appendChild(new Option("3 Wednesday","3"));
+				weekdays.appendChild(new Option("4 Thursday","4"));
+				weekdays.appendChild(new Option("5 Friday","5"));
+				weekdays.appendChild(new Option("6 Saturday","6"));
+
+			}
+		</script>
+	</head>
+	<body onload="populate();">
+		<h1>  </h1>
+		<form action="/cgi-bin/generate_settings.cgi" method="get" name="SettingsForm" onsubmit="selectAllOptions('execution_times');">
+			<fieldset>
+				<legend>Sensor Settings</legend>
+				<input type=HIDDEN name="PLUGIN_NAME" value=""/>
+				<input type=HIDDEN name="FRIENDLY_NAME" value=""/>
+				<input type=HIDDEN name="VERSION" value=""/>
+				<div>
+					<label for="AVERAGE_TIME">Averaging time (sec):</label><br>
+					<input type="text" name="AVERAGE_TIME" value= maxlength="100" /><br>
+				</div>
+				<div>
+					<label for="WARMUP_TIME_SEC">Warmup time (sec):</label><br>
+					<input type="text" name="WARMUP_TIME_SEC" value= maxlength="100" /><br>
+				</div>
+				<div>
+					<select name="BAUD_RATE">

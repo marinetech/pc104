@@ -1,0 +1,2 @@
+adduser -h /home/example_plugin -s /bin/false -G plugins -D -H example_plugin
+/home/example_plugin/postconf.script

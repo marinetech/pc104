@@ -1,0 +1,9 @@
+#!/bin/sh
+#THIS SCRIPT HAS TO BE "SOURCED" FROM THE do_work SCRIPT
+
+#Signal the UDOO that is going to be poweroff
+echo poweroff | nc $UDOO_IP $UDOO_PORT
+
+sleep $POWEROFF_DELAY_SEC
+
+eval "$POWER_DOWN $POWER_PORT"

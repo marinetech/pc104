@@ -1,0 +1,8 @@
+Package: example_plugin
+Version: 1.0-1
+Section: base
+Priority: optional
+Architecture: all
+Depends: 
+Maintainer: Andrey Malakhovsky <andreym@gerg.tamu.edu>
+Description: Example plugin for the buoy system

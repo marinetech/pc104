@@ -1,0 +1,16 @@
+#!/bin/sh
+#THIS SCRIPT HAS TO BE "SOURCED" FROM THE do_work SCRIPT
+
+#Set the Udoo date
+echo "Set UDOO date"
+curr_date=$(date +%s.%N)
+echo set_date,$curr_date | nc $UDOO_IP $UDOO_PORT
+sleep $PROCESSING_REQ_TIME
+
+#Check if data has been correctly received 2 shore
+if [ $CONFIRM_REC2SHORE -ne 0 ];
+then
+	echo "Signal UDOO to delete all files sent"
+	echo remove_all | nc $UDOO_IP $UDOO_PORT
+	sleep $UPLOAD_TIME_SEC
+fi

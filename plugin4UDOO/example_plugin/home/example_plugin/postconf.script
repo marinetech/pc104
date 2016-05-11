@@ -1,0 +1,25 @@
+#!/bin/bash
+#Isolate execution times from the file, and install new crontab
+source /home/global_settings/global_settings.conf
+MY_DIR=`dirname $0`
+source $MY_DIR/settings.conf
+
+echo "Applying settings from web to $PLUGIN_NAME"; # | log_pipe
+
+#Check directory exists
+if [ ! -d "$STATIC_TEMP_DIR" ]; then
+    mkdir -p $STATIC_TEMP_DIR
+    echo "Created $STATIC_TEMP_DIR"; # | log_pipe
+fi
+
+
+SESSION_TEMP_DIR=`mktemp -d $STATIC_TEMP_DIR/$PLUGIN_NAME.XXXXXX`
+CRONTAB_TEMP_FILE="crontab.tmp"
+
+/bin/echo MAILTO=\"\" > "$SESSION_TEMP_DIR/$CRONTAB_TEMP_FILE"
+/bin/echo "" >> "$SESSION_TEMP_DIR/$CRONTAB_TEMP_FILE"
+/bin/echo "" >> "$SESSION_TEMP_DIR/$CRONTAB_TEMP_FILE"
+/bin/cat "$MY_DIR/settings.conf" | /bin/sed -n '/^EXECUTION_TIMES/p' | /bin/sed 's/EXECUTION_TIMES="//' | /bin/sed 's/"//' | /bin/sed 's/$/ /' | /bin/sed "s/$/\/home\/${PLUGIN_NAME}\/start.script/" >> "$SESSION_TEMP_DIR/$CRONTAB_TEMP_FILE"
+/usr/bin/crontab -u $PLUGIN_NAME "$SESSION_TEMP_DIR/$CRONTAB_TEMP_FILE"
+/bin/rm $SESSION_TEMP_DIR -rf
+exit 0

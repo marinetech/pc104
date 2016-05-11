@@ -1,0 +1,53 @@
+#!/bin/sh
+#THIS SCRIPT HAS TO BE "SOURCED" FROM THE INITIAL SCRIPT
+
+#Check directory exists
+
+if [ ! -e "$RAW_DATA_OUTPUT_DIR" ]; then
+    mkdir -p "$RAW_DATA_OUTPUT_DIR"
+fi
+
+RAW_DATA_FILENAME="$PLUGIN_NAME-$(hostname)-$DATE.txt"
+AVERAGED_DATA_FILENAME="$PLUGIN_NAME-averaged-$(hostname)-$DATE.txt"
+#power up sensor
+eval "$POWER_UP $POWER_PORT"
+#lets warm up
+sleep $WARMUP_TIME_SEC
+if [ -e "$MY_DIR/preprocessors.script" ];
+then
+	/bin/echo "Starting preprocessors"
+	source $MY_DIR/preprocessors.script
+fi
+#launch sensor
+#/bin/echo Launching sensor with PowerPort $POWER_PORT, Com Port $COM_PORT and averaging time $AVERAGE_TIME
+#$MY_DIR/example_pugin_bin -p $COM_PORT -r $BAUD_RATE -a $AVERAGE_TIME -o "$SESSION_TEMP_DIR/$RAW_DATA_FILENAME" -b "$SESSION_TEMP_DIR/$AVERAGED_DATA_FILENAME"
+
+sleep $AVERAGE_TIME
+
+if [ -e "$MY_DIR/postprocessors.script" ];
+then
+	/bin/echo "Starting postprocessors"
+	source $MY_DIR/postprocessors.script
+fi
+
+#power off
+if [ -e "$MY_DIR/poweroff.script" -a $AUTOMATIC_POWEROFF -ne 0 ];
+then
+	/bin/echo "Powering off the UDOO"
+	source $MY_DIR/poweroff.script
+fi
+
+#move files from temp to final destination
+if [ -e "$SESSION_TEMP_DIR/$RAW_DATA_FILENAME" ];
+then
+	/bin/mv "$SESSION_TEMP_DIR/$RAW_DATA_FILENAME" "$RAW_DATA_OUTPUT_DIR/"
+else
+	echo "Raw data file was not found"
+fi
+
+if [ -e "$SESSION_TEMP_DIR/$AVERAGED_DATA_FILENAME" ];
+then
+	/bin/mv "$SESSION_TEMP_DIR/$AVERAGED_DATA_FILENAME" "$AVG_DATA_OUTPUT_DIR/"
+else
+	echo "Averaged data file was not found"
+fi

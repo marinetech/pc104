@@ -1,0 +1,29 @@
+#!/bin/bash
+MY_DIR=`dirname $0`
+#source /home/global_settings/global_settings.conf
+source $MY_DIR/settings.conf
+#!/bin/bash
+
+#Check directory exists
+if [ ! -e "$STATIC_TEMP_DIR" ]; then
+    echo "FATAL ERROR: Temp dir $STATIC_TEMP_DIR does not exist. Cannot execute"; # | log_pipe
+    exit 13
+fi
+
+#this file is the main execution log
+LOG_FILENAME="$PLUGIN_NAME-log-$(hostname)-$DATE.txt"
+
+#temporary dir to hold log, raw, and other data, so that it wouldn't be disturbed by anyone while being created
+SESSION_TEMP_DIR=`mktemp -d $STATIC_TEMP_DIR/$PLUGIN_NAME.XXXXXX`
+
+log "Creating $SESSION_TEMP_DIR/$LOG_FILENAME"
+touch "$SESSION_TEMP_DIR/$LOG_FILENAME"
+
+source $MY_DIR/singleton.script; # | log_pipe 
+
+log "Moving $SESSION_TEMP_DIR/$LOG_FILENAME to $LOG_DATA_OUTPUT_DIR"
+#move the log file to log directory
+/bin/mv "$SESSION_TEMP_DIR/$LOG_FILENAME" "$LOG_DATA_OUTPUT_DIR"
+#erase the temp dir
+/bin/rm "$SESSION_TEMP_DIR" -rf
+
