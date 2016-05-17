@@ -24,10 +24,18 @@ fi
 
 sleep $AVERAGE_TIME
 
+#initialize the UDOO
 if [ -e "$MY_DIR/postprocessors.script" ];
 then
 	/bin/echo "Starting postprocessors"
 	source $MY_DIR/postprocessors.script
+fi
+
+#execute the required operations
+if [ -e "$MY_DIR/process.script" ];
+then
+	/bin/echo "Starting processing"
+	source $MY_DIR/process.script
 fi
 
 #power off

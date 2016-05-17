@@ -1,6 +1,17 @@
 #!/bin/sh
 #THIS SCRIPT HAS TO BE "SOURCED" FROM THE do_work SCRIPT
 
+#check UDOO on
+udoo_message=""
+while [ -z "$udoo_message" ]
+do
+	udoo_message=$(echo "getStatus" | nc $UDOO_IP $UDOO_PORT)
+	udoo_message=$(echo "$udoo_message" | grep ON)
+	sleep 0.1
+	echo $udoo_message
+	sleep 1
+done
+
 #Set the Udoo date
 echo "Set UDOO date"
 curr_date=$(date +%s.%N)
