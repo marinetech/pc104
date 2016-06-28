@@ -25,3 +25,11 @@ then
 	echo remove_all | nc $UDOO_IP $UDOO_PORT
 	sleep $UPLOAD_TIME_SEC
 fi
+
+#Check there are scripts that have to be uploaded to the UDOO
+if [ $UPLOAD_SCRIPTS -ne 0 ];
+then
+	echo "Upload new scripts to the UDOO from the ftp server"
+	source $MY_DIR/uplad_scripts.tcl
+	sleep $UPLOAD_TIME_SEC
+fi
