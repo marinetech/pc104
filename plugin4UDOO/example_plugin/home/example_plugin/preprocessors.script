@@ -31,5 +31,4 @@ if [ $UPLOAD_SCRIPTS -ne 0 ];
 then
 	echo "Upload new scripts to the UDOO from the ftp server"
 	source $MY_DIR/uplad_scripts.tcl
-	sleep $UPLOAD_TIME_SEC
 fi
