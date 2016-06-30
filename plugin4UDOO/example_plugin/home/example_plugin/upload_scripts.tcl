@@ -32,15 +32,15 @@
 # Breif description: script to upload files of an user
 set src_name "pc104"
 set src_address "192.168.100.98"
-set src_pass "evologics"
+set src_pass "pc104"
 set src_folder "pc104_2udoo"
 
-set dest_name "themo_usr"
+set dest_name "themo_user"
 set dest_address "192.168.100.11"
-set dest_pass "evologics"
+set dest_pass "themo_pass"
 set dest_folder "script"
 
-spawn bash -c "ssh -A -t $src_name@${src_address} rsync --remove-source-files -r $src_folder/* $dest_name@${dest_address}:${dest_folder}/."
+spawn bash -c "ssh -A -t $src_name@${src_address} rsync --remove-source-files -r ~/$src_folder/* $dest_name@${dest_address}:${dest_folder}/."
 expect {           
     -re ".*$src_name\@$src_address.*password:" {
         send "$src_pass\r"

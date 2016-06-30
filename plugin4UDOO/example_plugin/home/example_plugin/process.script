@@ -5,4 +5,5 @@ if [ $PROCESS_FLAG -ne 0 ];
 then
 	echo "Signal UDOO to execute a file"
 	echo "run_file,$PROCESS_FILE" | nc $UDOO_IP $UDOO_PORT
+	/bin/sleep $PROCESSING_TIME
 fi
