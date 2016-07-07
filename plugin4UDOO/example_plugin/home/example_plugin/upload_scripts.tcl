@@ -54,9 +54,11 @@ spawn bash -c "ssh -A -t $src_name@${src_address} rsync --remove-source-files -r
 expect {           
     -re ".*$src_name\@$src_address.*password:" {
         send "$src_pass\r"
+        set timeout -1
         exp_continue
     } -re ".*$dest_name\@$dest_address.*password:" {
         send "$dest_pass\r"
+        set timeout -1
         exp_continue
     } -re {(.*)yes/no\)?} {
         send "yes\r"
