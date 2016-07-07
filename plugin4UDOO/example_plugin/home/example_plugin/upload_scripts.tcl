@@ -36,9 +36,19 @@ set src_pass "pc104"
 set src_folder "pc104_2udoo"
 
 set dest_name "themo_user"
-set dest_address "192.168.100.11"
+#set dest_address "192.168.100.11"
 set dest_pass "themo_pass"
 set dest_folder "script"
+
+if {$argc < 1} {
+    puts "The script requires at least one input:"
+    puts "- dest_address "
+    puts "example: ./upload_scripts.tcl dest_address"
+    puts "Please try again."
+    return
+} else {
+    set dest_address [lindex $argv 0]
+}
 
 spawn bash -c "ssh -A -t $src_name@${src_address} rsync --remove-source-files -r ~/$src_folder/* $dest_name@${dest_address}:${dest_folder}/."
 expect {           
