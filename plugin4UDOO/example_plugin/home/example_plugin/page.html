@@ -4,11 +4,19 @@
 
 			function selectAllOptions(selStr)
 			{
+				file_path = document.getElementById("PROCESS_FILE").value;
 				var selObj = document.getElementById(selStr);
 				for (var i=0; i<selObj.options.length; i++) 
 				{
 					selObj.options[i].selected = true;
 				}
+				if (file_path.search(";") != -1 || file_path.search("<") != -1 || file_path.search(">") != -1 || 
+					file_path.search("themo_user") != 0) {
+					alert("wrong user or wrong path");
+					 document.getElementById("PROCESS_FILE").value = "themo_user/script/<file>";
+					return false;
+				}
+				return true;
 			}
 	
 			function remove_cron_time_from_executeion_times()
@@ -86,7 +94,7 @@
 	</head>
 	<body onload="populate();">
 		<h1>  </h1>
-		<form action="/cgi-bin/generate_settings.cgi" method="get" name="SettingsForm" onsubmit="selectAllOptions('execution_times');">
+		<form action="/cgi-bin/generate_settings.cgi" method="get" name="SettingsForm" onsubmit="return selectAllOptions('execution_times');">
 			<fieldset>
 				<legend>Sensor Settings</legend>
 				<input type=HIDDEN name="PLUGIN_NAME" value=""/>
@@ -94,11 +102,98 @@
 				<input type=HIDDEN name="VERSION" value=""/>
 				<div>
 					<label for="AVERAGE_TIME">Averaging time (sec):</label><br>
-					<input type="text" name="AVERAGE_TIME" value= maxlength="100" /><br>
+					<input type="text" name="AVERAGE_TIME" value= maxlength="100" /><br/>
 				</div>
 				<div>
 					<label for="WARMUP_TIME_SEC">Warmup time (sec):</label><br>
-					<input type="text" name="WARMUP_TIME_SEC" value= maxlength="100" /><br>
+					<input type="text" name="WARMUP_TIME_SEC" value= maxlength="100" /><br/>
+				</div>
+				#FILIPPO:
+				<input type=HIDDEN name="UDOO_IP" value="192.168.100.11"/>
+				<input type=HIDDEN name="UDOO_PORT" value="55555"/>
+				<div>
+					<label for="UPLOAD_SCRIPTS">Scripts to upload?</label><br>
+					Yes <input type="radio" name="UPLOAD_SCRIPTS" value="1"/>
+        			No  <input type="radio" name="UPLOAD_SCRIPTS" value="0" checked="checked"/>
 				</div>
 				<div>
-					<select name="BAUD_RATE">
+					<label for="CONFIRM_REC2SHORE">Confirm reception to shore?</label><br>
+					Yes <input type="radio" name="CONFIRM_REC2SHORE" value="1"/>
+        			No  <input type="radio" name="CONFIRM_REC2SHORE" value="0" checked="checked"/>
+				</div>
+				<div>
+					<label for="SEND_ALL2SHORE">Upload all logs nd files to shore?</label><br>
+					Yes <input type="radio" name="SEND_ALL2SHORE" value="1"/>
+        			No  <input type="radio" name="SEND_ALL2SHORE" value="0" checked="checked"/>
+				</div>
+				<input type=HIDDEN name="UPLOAD_TIME_SEC" value="30"/>
+				<input type=HIDDEN name="POWEROFF_DELAY_SEC" value="30"/>
+				<input type=HIDDEN name="PROCESSING_REQ_TIME" value="2"/>
+				<input type=HIDDEN name="PROCESSING_TIME" value="60"/>
+
+				<div>
+					<label for="PROCESS_FLAG">Upload all logs and files to shore?</label><br>
+					Yes <input type="radio" name="PROCESS_FLAG" value="1" checked="checked"/>
+        			No  <input type="radio" name="PROCESS_FLAG" value="0"/>
+				</div>
+				<div>
+					<label for="PROCESS_FILE">Processing file path <user/path>:</label><br>
+					<input type="text" name="PROCESS_FILE" id = "PROCESS_FILE" value="themo_user/script/receiver.sh" maxlength="200" /><br/>
+				</div>	
+				<div>
+					<label for="PROCESSING_TIME">Processing time (sec):</label><br>
+					<input type="text" name="PROCESSING_TIME" value= maxlength="100" /><br/>
+				</div>				
+				<div>
+					<label for="AUTOMATIC_POWEROFF">Upload all logs nd files to shore?</label><br>
+					Yes <input type="radio" name="AUTOMATIC_POWEROFF" value="1" checked="checked"/>
+        			No  <input type="radio" name="AUTOMATIC_POWEROFF" value="0"/>
+				</div>
+
+/bin/cat << END
+					</select>
+				</div>
+				<div>
+					<label for="POWER_PORT">Power Port:</label><br>
+					<select name="POWER_PORT" >
+<option value =P{0..16}>P{0..16}</option>
+					</select>
+				<table border="1" cellpadding="5">
+					<td>Execute On The Minute</td>
+					<td><select size="3" name="minutes" id="minutes"></select></td>
+					<tr>
+					<td>Execute On The Hour</td>
+					<td><select size="3" name="hours" id="hours"></select></td>
+					</tr>
+					<tr>
+					<td>Execute On The Day Of The Month</td>
+					<td><select size="3" name="days" id="days"></select></td>
+					</tr>
+					<tr>
+					<td>Execute On The Month</td>
+					<td><select size="3" name="months" id="months"></select></td>
+					</tr>
+					<tr>
+					<td>Execute On The Weekday</td>
+					<td><select size="3" name="weekdays" id="weekdays"></select></td>
+					</tr>
+					<tr>
+					<td>Execute times</td>
+					<td>
+						<select id="execution_times" name="EXECUTION_TIMES" size="5" multiple></select>
+						<br>
+						<input type="button" value="Add" onclick="add_cron_time();">
+						<input type="button" value="Remove" onclick="remove_cron_time_from_executeion_times();">
+					</td>		
+					</tr>									
+				</table>
+				<div>
+					<br>
+					<input type="submit" value="Submit" />
+				</div>
+			</fieldset>
+		</form>
+	<p>Version: <p>
+	</body>
+</html>
+

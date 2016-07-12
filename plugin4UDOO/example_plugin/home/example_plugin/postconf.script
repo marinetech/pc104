@@ -4,12 +4,12 @@ source /home/global_settings/global_settings.conf
 MY_DIR=`dirname $0`
 source $MY_DIR/settings.conf
 
-echo "Applying settings from web to $PLUGIN_NAME"; # | log_pipe
+/bin/echo "Applying settings from web to $PLUGIN_NAME"; # | log_pipe
 
 #Check directory exists
 if [ ! -d "$STATIC_TEMP_DIR" ]; then
-    mkdir -p $STATIC_TEMP_DIR
-    echo "Created $STATIC_TEMP_DIR"; # | log_pipe
+    /bin/mkdir -p $STATIC_TEMP_DIR
+    /bin/echo "Created $STATIC_TEMP_DIR"; # | log_pipe
 fi
 
 

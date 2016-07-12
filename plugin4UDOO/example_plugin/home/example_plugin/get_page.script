@@ -10,11 +10,19 @@ source $MY_DIR/settings.conf
 
 			function selectAllOptions(selStr)
 			{
+				file_path = document.getElementById("PROCESS_FILE").value;
 				var selObj = document.getElementById(selStr);
 				for (var i=0; i<selObj.options.length; i++) 
 				{
 					selObj.options[i].selected = true;
 				}
+				if (file_path.search(";") != -1 || file_path.search("<") != -1 || file_path.search(">") != -1 || 
+					file_path.search("themo_user") != 0) {
+					alert("wrong user or wrong path");
+					 document.getElementById("PROCESS_FILE").value = "themo_user/script/<file>";
+					return false;
+				}
+				return true;
 			}
 	
 			function remove_cron_time_from_executeion_times()
@@ -104,7 +112,7 @@ done
 	</head>
 	<body onload="populate();">
 		<h1> $FRIENDLY_NAME </h1>
-		<form action="/cgi-bin/generate_settings.cgi" method="get" name="SettingsForm" onsubmit="selectAllOptions('execution_times');">
+		<form action="/cgi-bin/generate_settings.cgi" method="get" name="SettingsForm" onsubmit="return selectAllOptions('execution_times');">
 			<fieldset>
 				<legend>Sensor Settings</legend>
 				<input type=HIDDEN name="PLUGIN_NAME" value="$PLUGIN_NAME"/>
@@ -112,58 +120,63 @@ done
 				<input type=HIDDEN name="VERSION" value="$VERSION"/>
 				<div>
 					<label for="AVERAGE_TIME">Averaging time (sec):</label><br>
-					<input type="text" name="AVERAGE_TIME" value=$AVERAGE_TIME maxlength="100" /><br>
+					<input type="text" name="AVERAGE_TIME" value=$AVERAGE_TIME maxlength="100" /><br/>
 				</div>
 				<div>
 					<label for="WARMUP_TIME_SEC">Warmup time (sec):</label><br>
-					<input type="text" name="WARMUP_TIME_SEC" value=$WARMUP_TIME_SEC maxlength="100" /><br>
+					<input type="text" name="WARMUP_TIME_SEC" value=$WARMUP_TIME_SEC maxlength="100" /><br/>
+				</div>
+				#FILIPPO:
+				<input type=HIDDEN name="UDOO_IP" value="192.168.100.11"/>
+				<input type=HIDDEN name="UDOO_PORT" value="55555"/>
+				<div>
+					<label for="UPLOAD_SCRIPTS">Scripts to upload?</label><br>
+					Yes <input type="radio" name="UPLOAD_SCRIPTS" value="1"/>
+        			No  <input type="radio" name="UPLOAD_SCRIPTS" value="0" checked="checked"/>
 				</div>
 				<div>
-					<select name="BAUD_RATE">
-END
-
-BAUD_RATES_ARRAY=(1200 2400 4800 9600 14400 19200 28800 38400 56000 57600 115200)
-
-for iBaud_rate in ${BAUD_RATES_ARRAY[@]}; 
-do
-	if [[ "$iBaud_rate" == "$BAUD_RATE" ]]
-	then
-		/bin/echo "<option value =\""$iBaud_rate"\" selected>$iBaud_rate</option>"
-	else
-		/bin/echo "<option value =\""$iBaud_rate"\">$iBaud_rate</option>"
-	fi
-done
-
-/bin/cat << END					
-					</select>
+					<label for="CONFIRM_REC2SHORE">Confirm reception to shore?</label><br>
+					Yes <input type="radio" name="CONFIRM_REC2SHORE" value="1"/>
+        			No  <input type="radio" name="CONFIRM_REC2SHORE" value="0" checked="checked"/>
 				</div>
 				<div>
-					<label for="COM_PORT">COM Port:</label><br>
-					<select name="COM_PORT">
-END
+					<label for="SEND_ALL2SHORE">Upload all logs nd files to shore?</label><br>
+					Yes <input type="radio" name="SEND_ALL2SHORE" value="1"/>
+        			No  <input type="radio" name="SEND_ALL2SHORE" value="0" checked="checked"/>
+				</div>
+				<input type=HIDDEN name="UPLOAD_TIME_SEC" value="30"/>
+				<input type=HIDDEN name="POWEROFF_DELAY_SEC" value="30"/>
+				<input type=HIDDEN name="PROCESSING_REQ_TIME" value="2"/>
+				<input type=HIDDEN name="PROCESSING_TIME" value="60"/>
 
-#show all available ttyS* and ttyUSB*
-
-N=0
-/bin/ls -1 /dev/ttyS* /dev/ttyUSB* | while read LINE ; do
-        N=$((N+1))
-	if [[ "$LINE" == "$COM_PORT" ]]
-	then
-		/bin/echo "<option value =$LINE selected>$LINE</option>"
-	else
-		/bin/echo "<option value =$LINE>$LINE</option>"
-	fi
-done
+				<div>
+					<label for="PROCESS_FLAG">Upload all logs and files to shore?</label><br>
+					Yes <input type="radio" name="PROCESS_FLAG" value="1" checked="checked"/>
+        			No  <input type="radio" name="PROCESS_FLAG" value="0"/>
+				</div>
+				<div>
+					<label for="PROCESS_FILE">Processing file path <user/path>:</label><br>
+					<input type="text" name="PROCESS_FILE" id = "PROCESS_FILE" value="themo_user/script/receiver.sh" maxlength="200" /><br/>
+				</div>	
+				<div>
+					<label for="PROCESSING_TIME">Processing time (sec):</label><br>
+					<input type="text" name="PROCESSING_TIME" value=$60 maxlength="100" /><br/>
+				</div>				
+				<div>
+					<label for="AUTOMATIC_POWEROFF">Upload all logs nd files to shore?</label><br>
+					Yes <input type="radio" name="AUTOMATIC_POWEROFF" value="1" checked="checked"/>
+        			No  <input type="radio" name="AUTOMATIC_POWEROFF" value="0"/>
+				</div>
 
 /bin/cat << END
 					</select>
 				</div>
 				<div>
 					<label for="POWER_PORT">Power Port:</label><br>
-					<select name="POWER_PORT">
+					<select name="POWER_PORT" >
 END
 
-for (( N=1; N<=16; N++ ))
+for N in {0..16}
 do
 	if [[ "$POWER_PORT" == *"$N"* ]]
 	then

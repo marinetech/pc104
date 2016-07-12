@@ -6,7 +6,7 @@ source $MY_DIR/settings.conf
 
 #Check directory exists
 if [ ! -e "$STATIC_TEMP_DIR" ]; then
-    echo "FATAL ERROR: Temp dir $STATIC_TEMP_DIR does not exist. Cannot execute"; # | log_pipe
+    /bin/echo "FATAL ERROR: Temp dir $STATIC_TEMP_DIR does not exist. Cannot execute"; # | log_pipe
     exit 13
 fi
 
@@ -17,7 +17,7 @@ LOG_FILENAME="$PLUGIN_NAME-log-$(hostname)-$DATE.txt"
 SESSION_TEMP_DIR=`mktemp -d $STATIC_TEMP_DIR/$PLUGIN_NAME.XXXXXX`
 
 log "Creating $SESSION_TEMP_DIR/$LOG_FILENAME"
-touch "$SESSION_TEMP_DIR/$LOG_FILENAME"
+/usr/bin/touch "$SESSION_TEMP_DIR/$LOG_FILENAME"
 
 source $MY_DIR/singleton.script; # | log_pipe 
 
