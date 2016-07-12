@@ -163,7 +163,7 @@ done
 				<input type=HIDDEN name="PROCESSING_TIME" value="60"/>
 
 				<div>
-					<label for="PROCESS_FLAG">Upload all logs and files to shore?</label><br>
+					<label for="PROCESS_FLAG">Do you need to run a script?</label><br>
 					Yes <input type="radio" name="PROCESS_FLAG" value="1"/ onclick="execute_script(1)">
         			No  <input type="radio" name="PROCESS_FLAG" value="0" checked="checked" onclick="execute_script(0)"/>
 				</div>
@@ -181,7 +181,6 @@ done
         			No  <input type="radio" name="AUTOMATIC_POWEROFF" value="0"/>
 				</div>
 
-/bin/cat << END
 					</select>
 				</div>
 				<div>
@@ -189,7 +188,7 @@ done
 					<select name="POWER_PORT" >
 END
 
-for N in {0..16}
+for (( N=1; N<=16; N++ ))
 do
 	if [[ "$POWER_PORT" == *"$N"* ]]
 	then

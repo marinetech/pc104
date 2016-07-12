@@ -7,13 +7,13 @@ while [ -z "$udoo_message" ]
 do
 	udoo_message=$(/bin/echo "getStatus" | nc $UDOO_IP $UDOO_PORT)
 	udoo_message=$(/bin/echo "$udoo_message" | grep ON)
-	/bin/sleep 0.1
-	/bin/echo $udoo_message
+	/bin/usleep 10000
+	/bin/echo "received $udoo_message" | log_pipe
 	/bin/sleep 1
 done
 
 #Set the Udoo date
-/bin/echo "Set UDOO date"
+/bin/echo "Set UDOO date" | log_pipe
 curr_date=$(date +%s.%N)
 /bin/echo set_date,$curr_date | nc $UDOO_IP $UDOO_PORT
 /bin/sleep $PROCESSING_REQ_TIME
@@ -21,7 +21,7 @@ curr_date=$(date +%s.%N)
 #Check if data has been correctly received 2 shore
 if [ $CONFIRM_REC2SHORE -ne 0 ];
 then
-	/bin/echo "Signal UDOO to delete all files sent"
+	/bin/echo "Signal UDOO to delete all files sent" | log_pipe
 	/bin/echo remove_all | nc $UDOO_IP $UDOO_PORT
 	/bin/sleep $UPLOAD_TIME_SEC
 fi
@@ -29,6 +29,6 @@ fi
 #Check there are scripts that have to be uploaded to the UDOO
 if [ $UPLOAD_SCRIPTS -ne 0 ];
 then
-	/bin/echo "Upload new scripts to the UDOO from the ftp server"
+	/bin/echo "Upload new scripts to the UDOO from the ftp server" | log_pipe
 	./$MY_DIR/upload_scripts.tcl $UDOO_IP
 fi

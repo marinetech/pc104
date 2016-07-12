@@ -4,12 +4,14 @@
 
 			function selectAllOptions(selStr)
 			{
-				file_path = document.getElementById("PROCESS_FILE").value;
 				var selObj = document.getElementById(selStr);
 				for (var i=0; i<selObj.options.length; i++) 
 				{
 					selObj.options[i].selected = true;
 				}
+				if (document.getElementById("PROCESS_FILE").disabled)
+					return true;
+				file_path = document.getElementById("PROCESS_FILE").value;
 				if (file_path.search(";") != -1 || file_path.search("<") != -1 || file_path.search(">") != -1 || 
 					file_path.search("themo_user") != 0) {
 					alert("wrong user or wrong path");
@@ -19,6 +21,17 @@
 				return true;
 			}
 	
+			function execute_script(flag) {
+				if (flag) {
+					document.getElementById("PROCESS_FILE").disabled = false;
+					document.getElementById("PROCESSING_TIME").disabled = false;
+				}
+				else {
+					document.getElementById("PROCESS_FILE").disabled = true;
+					document.getElementById("PROCESSING_TIME").disabled = true;
+				}
+			}
+
 			function remove_cron_time_from_executeion_times()
 			{
 				execution_times.remove(execution_times.selectedIndex);
@@ -133,19 +146,19 @@
 
 				<div>
 					<label for="PROCESS_FLAG">Upload all logs and files to shore?</label><br>
-					Yes <input type="radio" name="PROCESS_FLAG" value="1" checked="checked"/>
-        			No  <input type="radio" name="PROCESS_FLAG" value="0"/>
+					Yes <input type="radio" name="PROCESS_FLAG" value="1"/ onclick="execute_script(1)">
+        			No  <input type="radio" name="PROCESS_FLAG" value="0" checked="checked" onclick="execute_script(0)"/>
 				</div>
 				<div>
 					<label for="PROCESS_FILE">Processing file path <user/path>:</label><br>
-					<input type="text" name="PROCESS_FILE" id = "PROCESS_FILE" value="themo_user/script/receiver.sh" maxlength="200" /><br/>
+					<input type="text" name="PROCESS_FILE" id = "PROCESS_FILE" disabled value="themo_user/script/receiver.sh" maxlength="200" /><br/>
 				</div>	
 				<div>
 					<label for="PROCESSING_TIME">Processing time (sec):</label><br>
-					<input type="text" name="PROCESSING_TIME" value= maxlength="100" /><br/>
+					<input type="text" name="PROCESSING_TIME" id = "PROCESSING_TIME" disabled value="60" maxlength="100" /><br/>
 				</div>				
 				<div>
-					<label for="AUTOMATIC_POWEROFF">Upload all logs nd files to shore?</label><br>
+					<label for="AUTOMATIC_POWEROFF">Automatic power off?</label><br>
 					Yes <input type="radio" name="AUTOMATIC_POWEROFF" value="1" checked="checked"/>
         			No  <input type="radio" name="AUTOMATIC_POWEROFF" value="0"/>
 				</div>

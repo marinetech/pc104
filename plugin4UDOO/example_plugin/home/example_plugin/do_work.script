@@ -15,7 +15,7 @@ eval "$POWER_UP $POWER_PORT"
 /bin/sleep $WARMUP_TIME_SEC
 if [ -e "$MY_DIR/preprocessors.script" ];
 then
-	/bin/echo "Starting preprocessors"
+	/bin/echo "Starting preprocessors" | log_pipe
 	source $MY_DIR/preprocessors.script
 fi
 #launch sensor
@@ -27,7 +27,7 @@ fi
 #execute the required operations
 if [ -e "$MY_DIR/process.script" ];
 then
-        /bin/echo "Starting processing"
+        /bin/echo "Starting processing" | log_pipe
         source $MY_DIR/process.script
 fi
 #/bin/sleep $AVERAGE_TIME
@@ -35,14 +35,14 @@ fi
 #download data from the UDOO
 if [ -e "$MY_DIR/postprocessors.script" ];
 then
-	/bin/echo "Starting postprocessors"
+	/bin/echo "Starting postprocessors" | log_pipe
 	source $MY_DIR/postprocessors.script
 fi
 
 #power off
 if [ -e "$MY_DIR/poweroff.script" -a $AUTOMATIC_POWEROFF -ne 0 ];
 then
-	/bin/echo "Powering off the UDOO"
+	/bin/echo "Powering off the UDOO" | log_pipe
 	source $MY_DIR/poweroff.script
 fi
 
@@ -51,7 +51,7 @@ if [ -e "$SESSION_TEMP_DIR/$RAW_DATA_FILENAME" ];
 then
 	/bin/mv "$SESSION_TEMP_DIR/$RAW_DATA_FILENAME" "$RAW_DATA_OUTPUT_DIR/"
 else
-	echo "Raw data file was not found"
+	echo "Raw data file was not found" | log_pipe
 fi
 
 if [ -e "$SESSION_TEMP_DIR/$AVERAGED_DATA_FILENAME" ];

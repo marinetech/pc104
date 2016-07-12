@@ -3,7 +3,7 @@
 
 if [ $PROCESS_FLAG -ne 0 ];
 then
-	/bin/echo "Signal UDOO to execute a file"
+	/bin/echo "Signal UDOO to execute the file $PROCESS_FILE" | log_pipe
 	/bin/echo "run_file,$PROCESS_FILE" | nc $UDOO_IP $UDOO_PORT
 	/bin/sleep $PROCESSING_TIME
 fi
