@@ -30,5 +30,5 @@ fi
 if [ $UPLOAD_SCRIPTS -ne 0 ];
 then
 	/bin/echo "Upload new scripts to the UDOO from the ftp server" | log_pipe
-	./$MY_DIR/upload_scripts.tcl $UDOO_IP
+	./$MY_DIR/transfer.script $UDOO_IP
 fi

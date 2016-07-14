@@ -1,0 +1,51 @@
+#!/bin/sh
+#FTP_SUCCESS will be 0 on success, or error number otherwise. Default value 1
+
+#ncftpput returns the following exit values:
+#0 Success.
+#1 Could not connect to remote host.
+#2 Could not connect to remote host - timed out.
+#3 Transfer failed.
+#4 Transfer failed - timed out.
+#5 Directory change failed.
+#6 Directory change failed - timed out.
+#7 Malformed URL.
+#8 Usage error.
+#9 Error in login configuration file.
+#10 Library initialization failed.
+#11 Session initialization failed.
+
+umask 0002
+FTP_SOURCE_DIR="/home/data/uploads/script"
+FTP_TARGET_DIR="script"
+ARCHIVE_PATH="home/data/archive"
+
+#check the source dir is not empty. If it is, ncftp will transfer its own binaries to the ftp, which will incur in extra charges.
+if [ ! -z $FTP_SOURCE_DIR ]; then
+	/usr/bin/find $FTP_SOURCE_DIR -type f | while read filename; do 
+	
+		/bin/echo  "Begin transferring $filename" 
+		$MY_DIR/ncftpput -v -u $FTP_USERNAME -p $FTP_PASSWORD $UDOO_IP $FTP_TARGET_DIR $filename
+		FTP_SUCCESS=$?
+
+		case "$FTP_SUCCESS" in
+			"0")
+				#Transfer success
+				/bin/echo " $filename transfer success, moving to $ARCHIVE_PATH" 
+				mv $filename $ARCHIVE_PATH/
+				;;
+			"2 | 3")
+				#this means ftp server is not responding; We should abort trying
+				echo " $filename transfer error: $FTP_SUCCESS - could not connect to $FTP_HOST. Aborting."
+				break
+				;;
+			*)
+				#This is some other error
+				/bin/echo " $filename transfer error: $FTP_SUCCESS. See error description at http://www.ncftp.com/ncftp/doc/ncftpput.html"
+				;; 
+		esac	
+	done
+else
+	echo " source directory is not specified"
+	$FTP_SUCCESS=1
+fi

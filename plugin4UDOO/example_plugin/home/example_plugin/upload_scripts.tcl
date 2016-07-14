@@ -28,12 +28,12 @@
 
 # Author: Filippo Campagnaro
 # email: campagn1@dei.unipd.it
-# place it in /usr/local/bin/upload_files.tcl
 # Breif description: script to upload files of an user
 set src_name "pc104"
 set src_address "192.168.100.98"
 set src_pass "pc104"
-set src_folder "pc104_2udoo"
+set src_folder "/home/data/uploads"
+set archive_path "home/data/archive"
 
 set dest_name "themo_user"
 #set dest_address "192.168.100.11"
@@ -50,7 +50,13 @@ if {$argc < 1} {
     set dest_address [lindex $argv 0]
 }
 
-spawn bash -c "ssh -A -t $src_name@${src_address} rsync --remove-source-files -r ~/$src_folder/* $dest_name@${dest_address}:${dest_folder}/."
+foreach file [glob -nocomplain $src_folder/*] {
+  file copy -force -- $file [file join archive_path/.]
+  sleep 0.1
+}
+
+#spawn bash -c "ssh -A -t $src_name@${src_address} rsync --remove-source-files -r $src_folder/* $dest_name@${dest_address}:${dest_folder}/."
+spawn bash -c "scp -r $src_folder/* $dest_name@${dest_address}:${dest_folder}/."
 expect {           
     -re ".*$src_name\@$src_address.*password:" {
         send "$src_pass\r"
@@ -72,4 +78,9 @@ expect {
       
     }
 }
+
+foreach file [glob -nocomplain $src_folder/*] {                                                                                                                         
+  file delete -force -- $file
+  sleep 0.1                                                                                                                                                             
+} 
 exit
