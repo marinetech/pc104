@@ -16,9 +16,11 @@
 #11 Session initialization failed.
 
 umask 0002
+
 FTP_SOURCE_DIR="/home/data/uploads/script"
 FTP_TARGET_DIR="script"
 ARCHIVE_PATH="home/data/archive"
+FTP_PASSWORD="themo_pass"
 
 #check the source dir is not empty. If it is, ncftp will transfer its own binaries to the ftp, which will incur in extra charges.
 if [ ! -z $FTP_SOURCE_DIR ]; then
