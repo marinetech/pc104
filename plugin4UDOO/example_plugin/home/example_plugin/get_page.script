@@ -139,8 +139,7 @@ done
 					<label for="WARMUP_TIME_SEC">Warmup time (sec):</label><br>
 					<input type="text" name="WARMUP_TIME_SEC" value=$WARMUP_TIME_SEC maxlength="100" /><br/>
 				</div>
-				#FILIPPO:
-				<input type=HIDDEN name="UDOO_IP" value="192.168.100.11"/>
+				<input type=HIDDEN name="UDOO_IP" value="165.91.230.66"/>
 				<input type=HIDDEN name="UDOO_PORT" value="55555"/>
 				<div>
 					<label for="UPLOAD_SCRIPTS">Scripts to upload?</label><br>
@@ -150,18 +149,21 @@ done
 				<div>
 					<label for="CONFIRM_REC2SHORE">Confirm reception to shore?</label><br>
 					Yes <input type="radio" name="CONFIRM_REC2SHORE" value="1"/>
-        			No  <input type="radio" name="CONFIRM_REC2SHORE" value="0" checked="checked"/>
+        			        No  <input type="radio" name="CONFIRM_REC2SHORE" value="0" checked="checked"/>
 				</div>
+				<div>                                                                                                                 
+				        <label for="RESEND_FILES">Do you want to retransmit sent files to shore?</label><br>                                        
+				        Yes <input type="radio" name="RESEND_FILES" value="1"/>                                                  
+				        No  <input type="radio" name="RESEND_FILES" value="0" checked="checked"/>                  
+				</div> 
 				<div>
-					<label for="SEND_ALL2SHORE">Upload all logs nd files to shore?</label><br>
+					<label for="SEND_ALL2SHORE">Upload all logs and files to shore?</label><br>
 					Yes <input type="radio" name="SEND_ALL2SHORE" value="1"/>
         			No  <input type="radio" name="SEND_ALL2SHORE" value="0" checked="checked"/>
 				</div>
 				<input type=HIDDEN name="UPLOAD_TIME_SEC" value="30"/>
 				<input type=HIDDEN name="POWEROFF_DELAY_SEC" value="30"/>
 				<input type=HIDDEN name="PROCESSING_REQ_TIME" value="2"/>
-				<input type=HIDDEN name="PROCESSING_TIME" value="60"/>
-
 				<div>
 					<label for="PROCESS_FLAG">Do you need to run a script?</label><br>
 					Yes <input type="radio" name="PROCESS_FLAG" value="1"/ onclick="execute_script(1)">

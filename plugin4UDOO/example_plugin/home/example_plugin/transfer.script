@@ -17,16 +17,18 @@
 
 umask 0002
 
-FTP_SOURCE_DIR="/home/data/uploads/script"
+FTP_SOURCE_DIR="/home/data/updates/script"
 FTP_TARGET_DIR="script"
-ARCHIVE_PATH="home/data/archive"
+ARCHIVE_PATH="/home/data/archive"
+FTP_USERNAME="themo_user"
 FTP_PASSWORD="themo_pass"
 
 #check the source dir is not empty. If it is, ncftp will transfer its own binaries to the ftp, which will incur in extra charges.
 if [ ! -z $FTP_SOURCE_DIR ]; then
 	/usr/bin/find $FTP_SOURCE_DIR -type f | while read filename; do 
 	
-		/bin/echo  "Begin transferring $filename" 
+		/bin/echo  "Begin transferring $filename to host $UDOO_IP user $FTP_USERNAME"
+		/bin/echo "$MY_DIR/ncftpput -v -u $FTP_USERNAME -p $FTP_PASSWORD $UDOO_IP $FTP_TARGET_DIR $filename" 
 		$MY_DIR/ncftpput -v -u $FTP_USERNAME -p $FTP_PASSWORD $UDOO_IP $FTP_TARGET_DIR $filename
 		FTP_SUCCESS=$?
 

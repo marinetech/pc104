@@ -3,13 +3,23 @@
 
 #check UDOO on
 udoo_message=""
+n_attempt=0
+MAX_ATTEMPT=50
 while [ -z "$udoo_message" ]
 do
 	udoo_message=$(/bin/echo "getStatus" | nc $UDOO_IP $UDOO_PORT)
 	udoo_message=$(/bin/echo "$udoo_message" | grep ON)
-	/bin/usleep 10000
+	/bin/sleep 1
 	/bin/echo "received $udoo_message" | log_pipe
 	/bin/sleep 1
+	n_attempt=$(($n_attempt+1))
+	/bin/echo "attempt number $n_attempt" | log_pipe
+        if [[ $n_attempt -ge $MAX_ATTEMPT ]]
+        then
+            /bin/echo "no connection with the udoo, powering it off" | log_pipe
+            source $MY_DIR/poweroff.script
+            exit
+        fi
 done
 
 #Set the Udoo date
@@ -24,11 +34,17 @@ then
 	/bin/echo "Signal UDOO to delete all files sent" | log_pipe
 	/bin/echo remove_all | nc $UDOO_IP $UDOO_PORT
 	/bin/sleep $UPLOAD_TIME_SEC
+elif [ $RESEND_FILES -ne 0 ]
+then
+	/bin/echo "Signal UDOO to upload all sent files again" | log_pipe
+	/bin/echo retransmit | nc $UDOO_IP $UDOO_PORT
+	/bin/sleep $UPLOAD_TIME_SEC
+	                
 fi
 
 #Check there are scripts that have to be uploaded to the UDOO
 if [ $UPLOAD_SCRIPTS -ne 0 ];
 then
 	/bin/echo "Upload new scripts to the UDOO from the ftp server" | log_pipe
-	./$MY_DIR/transfer.script $UDOO_IP
+	source $MY_DIR/transfer.script
 fi
